@@ -1,7 +1,7 @@
 #include <sourcemod>
 #include <sdkhooks>
 
-bool g_StabCoolDown[MAXPLAYERS+1] = { false, ... };
+bool g_StabCoolDown[MAXPLAYERS+1] = { true, ... };
 
 public Plugin myinfo =
 {
@@ -29,18 +29,20 @@ public void OnClientPutInServer(int client)
 
 public Action OnDamageCallback(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3])
 {
-    if(damagetype == 4100 && g_StabCoolDown[attacker])
+    if(damagetype == 4100 && g_StabCoolDown[victim])
     {
-        g_StabCoolDown[attacker] = false;
-        CreateTimer(3.0, StabCoolDown, attacker);
+        g_StabCoolDown[victim] = false;
+        CreateTimer(3.0, StabCoolDown, victim);
+        SetEntityRenderColor(victim, 0, 255, 0, 255);
         if(damage != 55.0)
         {
             damage = 55.0;
             //PrintToChatAll("%.2f", damage);
             return Plugin_Changed;
         }
-    } else if(!g_StabCoolDown[attacker])
+    } else if(!g_StabCoolDown[victim])
     {
+        //damage = 0.0;
         return Plugin_Handled;
     }
 
@@ -50,4 +52,6 @@ public Action OnDamageCallback(int victim, int &attacker, int &inflictor, float 
 Action StabCoolDown(Handle timer, int client)
 {
     g_StabCoolDown[client] = true;
+    SetEntityRenderColor(client, 255, 255, 255, 255);
+    KillTimer(timer);
 }
