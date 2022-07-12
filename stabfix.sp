@@ -37,12 +37,10 @@ public Action OnDamageCallback(int victim, int &attacker, int &inflictor, float 
         if(damage != 55.0)
         {
             damage = 55.0;
-            //PrintToChatAll("%.2f", damage);
             return Plugin_Changed;
         }
-    } else if(!g_StabCoolDown[victim])
+    } else if(damagetype == 4100 && !g_StabCoolDown[victim])
     {
-        //damage = 0.0;
         return Plugin_Handled;
     }
 
